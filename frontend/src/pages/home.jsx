@@ -126,15 +126,20 @@ const Home = () => {
 
   return (
     <>
-      <SimpleGrid columns={[2, 3]} spacingX={4} spacingY={10}>
+      <SimpleGrid
+        columns={{ base: 1, md: 2, lg: 3 }} // Adjust columns based on screen width
+        spacingX={4}
+        spacingY={10}
+      >
         {items.map((item) => {
           const percentage = calculatePercentage(item.ingredients);
           return (
             <Box
               key={item.id}
-              w="300px"
+              w="100%"
+              maxW="300px"
               h="350px"
-              bg="rgba(21, 150, 56, 0.6)"
+              bg="brand.200"
               display="flex"
               alignItems="center"
               justifyContent="center"
@@ -142,18 +147,18 @@ const Home = () => {
               borderRadius="md"
               boxShadow="md"
               _hover={{
-                bg: "rgba(21, 150, 56, 0.8)",
+                bg: "brand.600",
                 transform: "scale(1.05)",
                 transition: "0.2s",
               }}
-              onClick={() => handleRecipeClick(item)} // Open modal on click
+              onClick={() => handleRecipeClick(item)}
             >
               <Image
                 src={item.img}
                 alt={item.label}
-                boxSize="250px"
+                boxSize="270px"
                 border="2px solid"
-                borderColor="blue.500"
+                borderColor="brand.800"
                 borderRadius="md"
               />
               <Text fontSize="lg" fontWeight="bold" color="gray.700">
