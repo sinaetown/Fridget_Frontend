@@ -19,6 +19,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import CustomDropdown from "../components/CustomDropdown";
+import { ToastContainer, toast } from "react-toastify";
 
 const FOOD_CATEGORIES = [
   "Vegetables",
@@ -69,6 +70,22 @@ const Ingredients = () => {
     setIngredients([ingredient, ...ingredients]);
     setNewIngredient("");
     setSelectedCategory("");
+    // toast("Customized Toast!", {
+    //   style: {
+    //     backgroundColor: "#159638", // your custom background color
+    //     color: "#fff", // custom text color
+    //     fontSize: "16px",
+    //   },
+    // });
+    toast("New ingredient added!", {
+      position: "bottom-right",
+      autoClose: 4000,
+      hideProgressBar: true,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   // Open modal and set the ingredient to be deleted
@@ -88,10 +105,26 @@ const Ingredients = () => {
       setIngredientToDelete(null);
       onClose();
     }
+    toast("Successfully deleted ingredient!", {
+      position: "bottom-right",
+      autoClose: 4000,
+      hideProgressBar: true,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   return (
     <Container maxW="container.xl" py={5}>
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: "#159638",
+          color: "white",
+          fontWeight: "800",
+        }}
+      />
       <Heading mb={4}>Ingredients</Heading>
       <Box
         as="form"
