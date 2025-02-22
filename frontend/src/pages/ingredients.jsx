@@ -85,7 +85,7 @@ const Ingredients = () => {
             </option>
           ))}
         </Select>
-        <Button type="submit" colorScheme="brand">
+        <Button w={60} type="submit" colorScheme="brand">
           Add
         </Button>
       </Box>

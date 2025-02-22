@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Container,
   Input,
@@ -11,18 +11,42 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+import { DialogActionTrigger } from "../components/ui/dialog";
 
 const LoginPage = () => {
+  const { login } = useContext(AuthContext);
   const [form, setForm] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User Data:", form);
+    setError("");
+    try {
+      const response = await fetch("https://your-api.com/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      login(data.token);
+      console.log("Login successful, token stored");
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -37,6 +61,7 @@ const LoginPage = () => {
       <Heading mb={6} textAlign="center">
         Login
       </Heading>
+      {error && <Text color="red.500">{error}</Text>}
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <VStack spacing={4}>
           <FormControl isRequired>
