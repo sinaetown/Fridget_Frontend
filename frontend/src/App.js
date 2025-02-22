@@ -6,6 +6,8 @@ import Ingredients from "./pages/ingredients";
 import Profile from "./pages/profile";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
+import test from "./pages/test";
+import Test from "./pages/test";
 
 function App() {
   const location = useLocation();
@@ -48,6 +50,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/test" element={<Test />} />
         </Routes>
       </Box>
 

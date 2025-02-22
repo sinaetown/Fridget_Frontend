@@ -12,7 +12,10 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-import { DialogActionTrigger } from "../components/ui/dialog";
+import Menu from "@mui/joy/Menu";
+import MenuButton from "@mui/joy/MenuButton";
+import MenuItem from "@mui/joy/MenuItem";
+import Dropdown from "@mui/joy/Dropdown";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
