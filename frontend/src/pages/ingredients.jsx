@@ -6,10 +6,17 @@ import {
   Grid,
   Heading,
   Input,
-  Select,
   Text,
   Flex,
   CloseButton,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@chakra-ui/react";
 import CustomDropdown from "../components/CustomDropdown";
 
@@ -46,6 +53,8 @@ const Ingredients = () => {
   const [ingredients, setIngredients] = useState(DUMMY_INGREDIENTS);
   const [newIngredient, setNewIngredient] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [ingredientToDelete, setIngredientToDelete] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -62,14 +71,36 @@ const Ingredients = () => {
     setSelectedCategory("");
   };
 
-  const handleDelete = (id) => {
-    setIngredients(ingredients.filter((ingredient) => ingredient.id !== id));
+  // Open modal and set the ingredient to be deleted
+  const handleDeleteClick = (ingredient) => {
+    setIngredientToDelete(ingredient);
+    onOpen();
+  };
+
+  // Confirm deletion and remove the ingredient
+  const confirmDelete = () => {
+    if (ingredientToDelete) {
+      setIngredients(
+        ingredients.filter(
+          (ingredient) => ingredient.id !== ingredientToDelete.id
+        )
+      );
+      setIngredientToDelete(null);
+      onClose();
+    }
   };
 
   return (
     <Container maxW="container.xl" py={5}>
       <Heading mb={4}>Ingredients</Heading>
-      <Box as="form" onSubmit={handleSubmit} mb={4} display="flex" gap={4}>
+      <Box
+        as="form"
+        onSubmit={handleSubmit}
+        mb={4}
+        display="flex"
+        gap={4}
+        alignItems="center"
+      >
         <Input
           placeholder="Add ingredient"
           value={newIngredient}
@@ -113,7 +144,7 @@ const Ingredients = () => {
                       </Box>
                       <CloseButton
                         size="sm"
-                        onClick={() => handleDelete(ingredient.id)}
+                        onClick={() => handleDeleteClick(ingredient)}
                       />
                     </Flex>
                   </Box>
@@ -127,6 +158,29 @@ const Ingredients = () => {
           </Box>
         );
       })}
+
+      {/* Confirmation Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Deletion</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              Are you sure you want to delete{" "}
+              <strong>{ingredientToDelete?.name}</strong>?
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button colorScheme="red" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 };
