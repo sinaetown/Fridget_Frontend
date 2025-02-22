@@ -1,17 +1,23 @@
 package com.fridge.fridgeproject.user;
 
+import com.fridge.fridgeproject.ingredient.UserIngredient;
 import com.fridge.fridgeproject.user.dto.UserCreateReqDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Document(collection = "User")
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     private String id;
@@ -22,7 +28,8 @@ public class User {
     private Role role;
 
     @DBRef
-    private List<UserIngredient> userIngredients;
+    @Builder.Default
+    private List<UserIngredient> userIngredients = new ArrayList<>();
 
     public static User toEntity(UserCreateReqDto userCreateReqDto) {
         UserBuilder userBuilder = User.builder();

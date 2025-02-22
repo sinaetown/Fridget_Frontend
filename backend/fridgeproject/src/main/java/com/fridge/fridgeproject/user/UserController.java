@@ -1,12 +1,12 @@
 package com.fridge.fridgeproject.user;
 
 import com.fridge.fridgeproject.common.CommonResponse;
+import com.fridge.fridgeproject.ingredient.UserIngredient;
 import com.fridge.fridgeproject.securities.JwtTokenProvider;
 import com.fridge.fridgeproject.securities.RefreshTokenService;
 import com.fridge.fridgeproject.user.dto.LoginReqDto;
 import com.fridge.fridgeproject.user.dto.UserCreateReqDto;
-import com.fridge.fridgeproject.user.dto.UserResDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,8 +32,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
-    public List<User> findAll() {
-        return userService.findAll();
+    public List<User> findAllUsers() {
+        return userService.findAllUsers();
     }
 
     @PostMapping("/user/create")
@@ -55,7 +55,15 @@ public class UserController {
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "Login Success!", userInfo), HttpStatus.OK);
     }
 
-//    @GetMapping("/user/myIngredients") {
-//
-//    }
+    @PostMapping("/doLogout")
+    public ResponseEntity<CommonResponse> logout(@RequestBody Map<String, String> request) {
+        String accessToken = request.get("token");
+
+        Claims claims = jwtTokenProvider.getClaims(accessToken);
+        String userId = claims.getSubject();
+        refreshTokenService.deleteRefreshToken(userId);
+
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "Logout Success", null), HttpStatus.OK);
+    }
+
 }

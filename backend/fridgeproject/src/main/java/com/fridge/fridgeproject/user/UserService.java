@@ -5,7 +5,6 @@ import com.fridge.fridgeproject.user.dto.UserCreateReqDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -19,10 +18,9 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<User> findAll() {
+    public List<User> findAllUsers() {
         List<User> users = userRepository.findAll();
         return users;
-//        return users.stream().map(m -> UserResDto.toUserResDto(m)).collect(Collectors.toList());
     }
 
     public User create(UserCreateReqDto userCreateReqDto) {
@@ -42,4 +40,6 @@ public class UserService {
         }
         return user;
     }
+
+
 }
