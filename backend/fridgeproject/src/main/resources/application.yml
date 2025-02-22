@@ -1,0 +1,15 @@
+spring:
+  security:
+    user:
+      name: user
+      password: password
+  redis:
+    host: localhost
+    port: 6379
+  data:
+    mongodb:
+      uri: mongodb+srv://fridge:hellofridge@cluster0.1jlls.mongodb.net/fridge-db?retryWrites=true&w=majority&appName=Cluster0
+jwt:
+  expiration: 100
+  refresh-expiration: 86400
+  secretKey: "mysecret"
