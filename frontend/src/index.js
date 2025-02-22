@@ -7,7 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { AuthProvider } from "./context/AuthContext";
 import "@fontsource/inter";
-import { CssVarsProvider } from "@mui/joy/styles";
 
 const theme = extendTheme({
   colors: {
@@ -32,9 +31,7 @@ root.render(
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <AuthProvider>
-          <CssVarsProvider>
-            <App />
-          </CssVarsProvider>
+          <App />
         </AuthProvider>
       </BrowserRouter>
     </ChakraProvider>

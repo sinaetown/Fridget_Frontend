@@ -11,6 +11,7 @@ import {
   Flex,
   CloseButton,
 } from "@chakra-ui/react";
+import CustomDropdown from "../components/CustomDropdown";
 
 const FOOD_CATEGORIES = [
   "Vegetables",
@@ -74,17 +75,12 @@ const Ingredients = () => {
           value={newIngredient}
           onChange={(e) => setNewIngredient(e.target.value)}
         />
-        <Select
+        <CustomDropdown
+          options={FOOD_CATEGORIES}
+          selected={selectedCategory}
+          onChange={setSelectedCategory}
           placeholder="Select category"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          {FOOD_CATEGORIES.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </Select>
+        />
         <Button w={60} type="submit" colorScheme="brand">
           Add
         </Button>
