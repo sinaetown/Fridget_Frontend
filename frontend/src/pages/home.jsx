@@ -44,7 +44,7 @@ const Home = () => {
   const token = localStorage.getItem("token"); // Get token from localStorage
 
   const { user } = useContext(AuthContext);
-  const [userIngredients, setUserIngredients] = useState([]);
+  // const [userIngredients, setUserIngredients] = useState([]);
 
   // Search images based on menuName
   const searchImages = async (menuName) => {
@@ -75,6 +75,8 @@ const Home = () => {
   };
 
   const fetchRecipes = async () => {
+    console.log("fetching data hererererererere");
+
     try {
       const token = localStorage.getItem("token");
 
@@ -107,118 +109,125 @@ const Home = () => {
     fetchRecipes();
     if (!user?.token) return;
 
+    // if (recipes.length === 0) return;
+
     const fetchImagesForMenuItems = async () => {
       const updatedItems = await Promise.all(
-        items.map(async (item) => {
+        recipes.map(async (item) => {
           const imgUrl = await searchImages(item.name);
           return { ...item, img: imgUrl || item.img };
         })
       );
-      setItems(updatedItems);
+      setRecipes((prevRecipes) =>
+        prevRecipes.map((recipe, index) => ({
+          ...recipe,
+          img: updatedItems[index].img,
+        }))
+      );
     };
 
     fetchImagesForMenuItems();
 
-    const fetchIngredients = async () => {
-      console.log("FETCHING...");
+    // const fetchIngredients = async () => {
+    //   console.log("FETCHING...");
 
-      try {
-        const response = await fetch(FETCH_API_URL, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
+    //   try {
+    //     const response = await fetch(FETCH_API_URL, {
+    //       method: "GET",
+    //       headers: {
+    //         Authorization: `Bearer ${user.token}`,
+    //       },
+    //     });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch ingredients");
-        }
+    //     if (!response.ok) {
+    //       throw new Error("Failed to fetch ingredients");
+    //     }
 
-        const data = await response.json();
-        setUserIngredients(data || []);
-      } catch (error) {
-        console.error("Error fetching ingredients:", error);
-        toast.error("Failed to fetch ingredients!", {
-          position: "bottom-right",
-          autoClose: 4000,
-        });
-      }
-    };
+    //     const data = await response.json();
+    //     setUserIngredients(data || []);
+    //   } catch (error) {
+    //     console.error("Error fetching ingredients:", error);
+    //     toast.error("Failed to fetch ingredients!", {
+    //       position: "bottom-right",
+    //       autoClose: 4000,
+    //     });
+    //   }
+    // };
 
-    fetchIngredients();
+    // fetchIngredients();
   }, []);
 
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      name: "Orange Chicken",
-      img: "", // Initially empty, will be populated
-      ingredients: ["spaghetti", "beef", "tomato", "onion", "garlic"],
-      description: "A classic Italian pasta dish with rich meat sauce.",
-      nutrition: { calories: 500, fat: "20g", protein: "30g", carbs: "60g" },
-    },
-    {
-      id: 2,
-      name: "Chicken Curry",
-      img: "",
-      ingredients: ["chicken", "onion", "garlic", "curry powder", "rice"],
-      description: "A flavorful and aromatic curry with tender chicken.",
-      nutrition: { calories: 450, fat: "15g", protein: "35g", carbs: "50g" },
-    },
-    {
-      id: 3,
-      name: "Vegetable Stir-Fry",
-      img: "",
-      ingredients: ["bell pepper", "broccoli", "carrot", "soy sauce", "garlic"],
-      description: "A quick and healthy vegetable stir-fry with savory sauce.",
-      nutrition: { calories: 300, fat: "10g", protein: "8g", carbs: "45g" },
-    },
-    {
-      id: 4,
-      name: "Avocado Toast",
-      img: "",
-      ingredients: ["bread", "avocado", "egg", "cheese"],
-      description: "A healthy and delicious toast topped with avocado & egg.",
-      nutrition: { calories: 320, fat: "18g", protein: "12g", carbs: "40g" },
-    },
-    {
-      id: 5,
-      name: "Grilled Salmon",
-      img: "",
-      ingredients: ["salmon", "lemon", "garlic", "butter"],
-      description: "Perfectly grilled salmon with a hint of lemon and garlic.",
-      nutrition: { calories: 380, fat: "25g", protein: "40g", carbs: "5g" },
-    },
-    {
-      id: 6,
-      name: "Classic Cheeseburger",
-      img: "",
-      ingredients: ["beef patty", "cheese", "lettuce", "tomato", "bun"],
-      description: "A juicy grilled cheeseburger with fresh toppings.",
-      nutrition: { calories: 650, fat: "35g", protein: "45g", carbs: "50g" },
-    },
-    {
-      id: 7,
-      name: "Margarita Pizza",
-      img: "",
-      ingredients: ["pizza dough", "tomato sauce", "mozzarella", "basil"],
-      description: "Classic Italian pizza with fresh basil and mozzarella.",
-      nutrition: { calories: 600, fat: "22g", protein: "30g", carbs: "70g" },
-    },
-    {
-      id: 8,
-      name: "Caesar Salad",
-      img: "",
-      ingredients: ["lettuce", "chicken", "cheese", "croutons", "dressing"],
-      description: "A crisp and fresh Caesar salad with grilled chicken.",
-      nutrition: { calories: 300, fat: "15g", protein: "25g", carbs: "20g" },
-    },
-  ]);
+  // const [items, setItems] = useState([
+  //   {
+  //     id: 1,
+  //     name: "Orange Chicken",
+  //     img: "", // Initially empty, will be populated
+  //     ingredients: ["spaghetti", "beef", "tomato", "onion", "garlic"],
+  //     description: "A classic Italian pasta dish with rich meat sauce.",
+  //     nutrition: { calories: 500, fat: "20g", protein: "30g", carbs: "60g" },
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Chicken Curry",
+  //     img: "",
+  //     ingredients: ["chicken", "onion", "garlic", "curry powder", "rice"],
+  //     description: "A flavorful and aromatic curry with tender chicken.",
+  //     nutrition: { calories: 450, fat: "15g", protein: "35g", carbs: "50g" },
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Vegetable Stir-Fry",
+  //     img: "",
+  //     ingredients: ["bell pepper", "broccoli", "carrot", "soy sauce", "garlic"],
+  //     description: "A quick and healthy vegetable stir-fry with savory sauce.",
+  //     nutrition: { calories: 300, fat: "10g", protein: "8g", carbs: "45g" },
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Avocado Toast",
+  //     img: "",
+  //     ingredients: ["bread", "avocado", "egg", "cheese"],
+  //     description: "A healthy and delicious toast topped with avocado & egg.",
+  //     nutrition: { calories: 320, fat: "18g", protein: "12g", carbs: "40g" },
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Grilled Salmon",
+  //     img: "",
+  //     ingredients: ["salmon", "lemon", "garlic", "butter"],
+  //     description: "Perfectly grilled salmon with a hint of lemon and garlic.",
+  //     nutrition: { calories: 380, fat: "25g", protein: "40g", carbs: "5g" },
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Classic Cheeseburger",
+  //     img: "",
+  //     ingredients: ["beef patty", "cheese", "lettuce", "tomato", "bun"],
+  //     description: "A juicy grilled cheeseburger with fresh toppings.",
+  //     nutrition: { calories: 650, fat: "35g", protein: "45g", carbs: "50g" },
+  //   },
+  //   {
+  //     id: 7,
+  //     name: "Margarita Pizza",
+  //     img: "",
+  //     ingredients: ["pizza dough", "tomato sauce", "mozzarella", "basil"],
+  //     description: "Classic Italian pizza with fresh basil and mozzarella.",
+  //     nutrition: { calories: 600, fat: "22g", protein: "30g", carbs: "70g" },
+  //   },
+  //   {
+  //     id: 8,
+  //     name: "Caesar Salad",
+  //     img: "",
+  //     ingredients: ["lettuce", "chicken", "cheese", "croutons", "dressing"],
+  //     description: "A crisp and fresh Caesar salad with grilled chicken.",
+  //     nutrition: { calories: 300, fat: "15g", protein: "25g", carbs: "20g" },
+  //   },
+  // ]);
 
-  const displayedRecipes = error ? items : recipes;
+  // const displayedRecipes = error ? userIngredients : recipes;
 
-  const filteredRecipes = items.filter((recipe) =>
-    recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRecipes = recipes.filter((recipe) =>
+    recipe.name.includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -329,41 +338,46 @@ const Home = () => {
                 Ingredients:
               </Text>
               <Text fontSize="md" color="gray.700">
-                {selectedRecipe.ingredients?.join(", ") || "Not available"}
+                {selectedRecipe.ingredients?.map((ingredient, index) => (
+                  <span key={index}>
+                    {ingredient.name} ({ingredient.quantity})
+                  </span>
+                )) || "Not available"}
               </Text>
-              {/* Conditionally render missing ingredients if there are any */}
-              {selectedRecipe.ingredients?.filter(
-                (ingredient) =>
-                  !userIngredients.some(
-                    (userIngredient) =>
-                      userIngredient.name.toLowerCase() ===
-                      ingredient.toLowerCase()
-                  )
-              ).length > 0 && (
+
+              {/* Missing Ingredients */}
+              {selectedRecipe.missingIngredients?.length > 0 && (
                 <>
-                  <Text fontSize="lg" fontWeight="bold" color="red.500" mt={2}>
+                  <Text fontSize="lg" fontWeight="bold" mt={4} color="red.500">
                     Missing Ingredients:
                   </Text>
                   <Text fontSize="md" color="red.500">
-                    {selectedRecipe.ingredients
-                      ?.filter(
-                        (ingredient) =>
-                          !userIngredients.some(
-                            (userIngredient) =>
-                              userIngredient.name.toLowerCase() ===
-                              ingredient.toLowerCase()
-                          )
-                      )
-                      .join(", ") || "None"}
+                    {selectedRecipe.missingIngredients.join(", ")}
                   </Text>
                 </>
               )}
+
+              {/* Steps */}
+              {selectedRecipe.steps && selectedRecipe.steps.length > 0 && (
+                <>
+                  <Text fontSize="lg" fontWeight="bold" mt={4}>
+                    Steps:
+                  </Text>
+                  <Text fontSize="md" color="gray.700">
+                    {selectedRecipe.steps.map((step, index) => (
+                      <Text key={index}>{step}</Text>
+                    ))}
+                  </Text>
+                </>
+              )}
+
               <Text fontSize="lg" fontWeight="bold" mt={4}>
                 Description:
               </Text>
               <Text fontSize="md" color="gray.700">
                 {selectedRecipe.description}
               </Text>
+
               <Text fontSize="lg" fontWeight="bold" mt={4}>
                 Nutrition:
               </Text>
@@ -378,6 +392,15 @@ const Home = () => {
               </Text>
               <Text fontSize="md" color="gray.700">
                 Carbs: {selectedRecipe.nutrition?.carbs || "N/A"}
+              </Text>
+              <Text fontSize="md" color="gray.700">
+                Fiber: {selectedRecipe.nutrition?.fiber || "N/A"}
+              </Text>
+              <Text fontSize="md" color="gray.700">
+                Sugar: {selectedRecipe.nutrition?.sugar || "N/A"}
+              </Text>
+              <Text fontSize="md" color="gray.700">
+                Sodium: {selectedRecipe.nutrition?.sodium || "N/A"}
               </Text>
             </ModalBody>
           </ModalContent>
