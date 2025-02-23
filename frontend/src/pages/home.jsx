@@ -19,10 +19,14 @@ import {
 import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
 import { toast } from "react-toastify";
 import AuthContext from "../context/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
 
 const Home = () => {
   const API_URL = "http://localhost:8080/recipe/recommend";
   const FETCH_API_URL = "http://localhost:8080/user/ingredients";
+  const [isFirstLoad, setIsFirstLoad] = useState(
+    !localStorage.getItem("homeLoaded")
+  );
 
   const [recipes, setRecipes] = useState([]); // Stores API recipes
   const [loading, setLoading] = useState(true); // Loading state
@@ -70,6 +74,8 @@ const Home = () => {
     if (!user?.token) return;
 
     const fetchIngredients = async () => {
+      console.log("FETCHING...");
+
       try {
         const response = await fetch(FETCH_API_URL, {
           method: "GET",
@@ -95,6 +101,19 @@ const Home = () => {
 
     fetchIngredients();
   }, []);
+
+  useEffect(() => {
+    if (isFirstLoad) {
+      setTimeout(() => {
+        localStorage.setItem("homeLoaded", "false");
+        setIsFirstLoad(false);
+      }, 6000);
+    }
+  }, []);
+
+  if (isFirstLoad) {
+    return <LoadingScreen />; // Show loading screen only on first visit
+  }
 
   // Dummy Data (Used when API fails)
   const items = [
