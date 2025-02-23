@@ -148,8 +148,7 @@ const Home = () => {
     fetchIngredients();
   }, []);
 
-  // Dummy Data (Used when API fails)
-  const items = [
+  const [items, setItems] = useState([
     {
       id: 1,
       name: "Orange Chicken",
@@ -214,7 +213,7 @@ const Home = () => {
       description: "A crisp and fresh Caesar salad with grilled chicken.",
       nutrition: { calories: 300, fat: "15g", protein: "25g", carbs: "20g" },
     },
-  ];
+  ]);
 
   const displayedRecipes = error ? items : recipes;
 
