@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Box,
   Button,
@@ -19,9 +19,10 @@ import {
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion"; // Import Framer Motion
+import { motion } from "framer-motion";
 import CustomDropdown from "../components/CustomDropdown";
 import { ToastContainer, toast } from "react-toastify";
+import AuthContext from "../context/AuthContext";
 
 const FOOD_CATEGORIES = [
   "Vegetables",
@@ -41,54 +42,147 @@ const FOOD_CATEGORIES = [
   "Frozen Foods",
 ];
 
-const DUMMY_INGREDIENTS = [
-  { id: 1, name: "Carrot", category: "Vegetables" },
-  { id: 2, name: "Apple", category: "Fruits" },
-  { id: 3, name: "Chicken Breast", category: "Meat" },
-  { id: 4, name: "Salmon", category: "Seafood" },
-  { id: 5, name: "Milk", category: "Dairy" },
-  { id: 6, name: "Rice", category: "Grains" },
-  { id: 7, name: "Lentils", category: "Legumes" },
-  { id: 8, name: "Almonds", category: "Nuts & Seeds" },
-];
+const FETCH_API_URL = "http://localhost:8080/user/ingredients";
+const ADD_API_URL = "http://localhost:8080/user/ingredients/create";
+const DELETE_API_URL = "http://localhost:8080/user/ingredients/delete";
 
 const Ingredients = () => {
-  const [ingredients, setIngredients] = useState(DUMMY_INGREDIENTS);
+  const { user } = useContext(AuthContext);
+  const [ingredients, setIngredients] = useState([]);
   const [newIngredient, setNewIngredient] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [ingredientToDelete, setIngredientToDelete] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleSubmit = (e) => {
+  // Fetch user ingredients
+  useEffect(() => {
+    if (!user?.token) return;
+
+    const fetchIngredients = async () => {
+      try {
+        const response = await fetch(FETCH_API_URL, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch ingredients");
+        }
+
+        const data = await response.json();
+        setIngredients(data || []);
+      } catch (error) {
+        console.error("Error fetching ingredients:", error);
+        toast.error("Failed to fetch ingredients!", {
+          position: "bottom-right",
+          autoClose: 4000,
+        });
+      }
+    };
+
+    fetchIngredients();
+  }, [user]);
+
+  // Add ingredient
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newIngredient || !selectedCategory) return;
 
+    const token = user?.token || localStorage.getItem("token");
+    if (!token) {
+      toast.error("Authentication required. Please log in.", {
+        position: "bottom-right",
+        autoClose: 4000,
+      });
+      return;
+    }
+
     const ingredient = {
-      id: ingredients.length + 1,
       name: newIngredient,
       category: selectedCategory,
     };
 
-    setIngredients([...ingredients, ingredient]);
-    setNewIngredient("");
-    setSelectedCategory("");
+    try {
+      const response = await fetch(ADD_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify([ingredient]), // Send in array format
+      });
 
-    toast.success("New ingredient added!", {
-      position: "bottom-right",
-      autoClose: 4000,
-    });
+      if (!response.ok) {
+        throw new Error("Failed to add ingredient");
+      }
+
+      setIngredients([...ingredients, ingredient]);
+      setNewIngredient("");
+      setSelectedCategory("");
+
+      toast.success("New ingredient added!", {
+        position: "bottom-right",
+        autoClose: 4000,
+      });
+    } catch (error) {
+      console.error("Error adding ingredient:", error);
+      toast.error("Failed to add ingredient!", {
+        position: "bottom-right",
+        autoClose: 4000,
+      });
+    }
   };
 
-  const confirmDelete = () => {
-    if (ingredientToDelete) {
+  // Delete ingredient (send in the same array format)
+  const confirmDelete = async () => {
+    if (!ingredientToDelete) return;
+
+    const token = user?.token || localStorage.getItem("token");
+    if (!token) {
+      toast.error("Authentication required. Please log in.", {
+        position: "bottom-right",
+        autoClose: 4000,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(DELETE_API_URL, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify([
+          {
+            name: ingredientToDelete.name,
+            category: ingredientToDelete.category,
+          },
+        ]), // Match the format
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete ingredient");
+      }
+
       setIngredients(
         ingredients.filter(
-          (ingredient) => ingredient.id !== ingredientToDelete.id
+          (ingredient) => ingredient.name !== ingredientToDelete.name
         )
       );
+
       setIngredientToDelete(null);
       onClose();
+
       toast.success("Successfully deleted ingredient!", {
+        position: "bottom-right",
+        autoClose: 4000,
+      });
+    } catch (error) {
+      console.error("Error deleting ingredient:", error);
+      toast.error("Failed to delete ingredient!", {
         position: "bottom-right",
         autoClose: 4000,
       });
@@ -160,7 +254,7 @@ const Ingredients = () => {
                   {categoryIngredients.length > 0 ? (
                     categoryIngredients.map((ingredient) => (
                       <motion.div
-                        key={ingredient.id}
+                        key={ingredient.name}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3 }}

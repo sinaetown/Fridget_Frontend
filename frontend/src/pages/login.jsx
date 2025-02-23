@@ -44,7 +44,7 @@ const LoginPage = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      login(data.result.token);
+      login(data.result.token, data.result.userId);
       navigate("/home");
       console.log("Login successful, token stored");
     } catch (err) {

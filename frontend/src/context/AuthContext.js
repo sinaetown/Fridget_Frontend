@@ -5,29 +5,35 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const token = localStorage.getItem("token");
-    return token ? { token } : null;
+    const userId = localStorage.getItem("userId");
+    return token && userId ? { token, userId } : null;
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("TOKEN IN AUTH CONTEXT: ", token);
+    const userId = localStorage.getItem("userId");
 
-    if (token) {
-      setUser({ token });
+    console.log("TOKEN IN AUTH CONTEXT: ", token);
+    console.log("USER ID IN AUTH CONTEXT: ", userId);
+
+    if (token && userId) {
+      setUser({ token, userId });
     } else {
       setUser(null);
     }
     setLoading(false);
   }, []);
 
-  const login = (token) => {
+  const login = (token, userId) => {
     localStorage.setItem("token", token);
-    setUser({ token });
+    localStorage.setItem("userId", userId);
+    setUser({ token, userId });
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     console.log("LOGGING OUT");
 
     setUser(null);
