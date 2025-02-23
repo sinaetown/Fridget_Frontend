@@ -57,7 +57,7 @@ function App() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <Container maxW="container.lg" p={4}>
+    <Container maxW="container.xl" p={4}>
       {/* Navigation Bar (Hidden for Login & Signup) */}
       {!hideNav && (
         <Box
