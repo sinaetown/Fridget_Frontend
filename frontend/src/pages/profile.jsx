@@ -48,7 +48,7 @@ const Profile = () => {
       {
         id: 2,
         label: "Chicken Curry",
-        img: "/chicken-curry.jpg",
+        img: "https://slowcookerfoodie.com/wp-content/uploads/2022/03/Spicy-Chicken-Curry-500x500.jpg",
         ingredients: ["chicken", "onion", "garlic", "curry powder", "rice"],
         description: "A flavorful and aromatic curry with tender chicken.",
         nutrition: {
@@ -186,25 +186,32 @@ const Profile = () => {
           <ModalContent borderRadius="lg">
             <ModalHeader>{selectedRecipe.label}</ModalHeader>
             <ModalCloseButton />
-            <ModalBody>
+            <ModalBody maxHeight="500px" overflowY="auto">
+              {/* Fixed Image Size */}
               <Image
                 src={selectedRecipe.img}
                 alt={selectedRecipe.label}
+                width="100%"
+                height="300px"
                 borderRadius="lg"
+                objectFit="cover"
                 mb={4}
               />
-              <Text fontSize="lg" fontWeight="bold" mt={4}>
+
+              <Text fontSize="lg" fontWeight="bold">
                 Ingredients:
               </Text>
               <Text fontSize="md" color="gray.700">
                 {selectedRecipe.ingredients.join(", ")}
               </Text>
+
               <Text fontSize="lg" fontWeight="bold" mt={4}>
                 Description:
               </Text>
               <Text fontSize="md" color="gray.700">
                 {selectedRecipe.description}
               </Text>
+
               <Text fontSize="lg" fontWeight="bold" mt={4}>
                 Nutrition:
               </Text>
@@ -220,6 +227,7 @@ const Profile = () => {
               <Text fontSize="md" color="gray.700">
                 Carbs: {selectedRecipe.nutrition.carbs}
               </Text>
+
               <Text fontSize="lg" fontWeight="bold" mt={4}>
                 Steps:
               </Text>
