@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Image,
@@ -17,12 +17,9 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
-import { toast } from "react-toastify";
-import AuthContext from "../context/AuthContext";
 
 const Home = () => {
   const API_URL = "http://localhost:8080/recipe/recommend";
-  const FETCH_API_URL = "http://localhost:8080/user/ingredients";
 
   const [recipes, setRecipes] = useState([]); // Stores API recipes
   const [loading, setLoading] = useState(true); // Loading state
@@ -32,9 +29,6 @@ const Home = () => {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const token = localStorage.getItem("token"); // Get token from localStorage
-
-  const { user } = useContext(AuthContext);
-  const [userIngredients, setUserIngredients] = useState([]);
 
   const fetchRecipes = async () => {
     try {
@@ -67,33 +61,6 @@ const Home = () => {
   // Call the function inside useEffect
   useEffect(() => {
     fetchRecipes();
-    if (!user?.token) return;
-
-    const fetchIngredients = async () => {
-      try {
-        const response = await fetch(FETCH_API_URL, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch ingredients");
-        }
-
-        const data = await response.json();
-        setUserIngredients(data || []);
-      } catch (error) {
-        console.error("Error fetching ingredients:", error);
-        toast.error("Failed to fetch ingredients!", {
-          position: "bottom-right",
-          autoClose: 4000,
-        });
-      }
-    };
-
-    fetchIngredients();
   }, []);
 
   // Dummy Data (Used when API fails)
@@ -280,33 +247,6 @@ const Home = () => {
               <Text fontSize="md" color="gray.700">
                 {selectedRecipe.ingredients?.join(", ") || "Not available"}
               </Text>
-              {/* Conditionally render missing ingredients if there are any */}
-              {selectedRecipe.ingredients?.filter(
-                (ingredient) =>
-                  !userIngredients.some(
-                    (userIngredient) =>
-                      userIngredient.name.toLowerCase() ===
-                      ingredient.toLowerCase()
-                  )
-              ).length > 0 && (
-                <>
-                  <Text fontSize="lg" fontWeight="bold" color="red.500" mt={2}>
-                    Missing Ingredients:
-                  </Text>
-                  <Text fontSize="md" color="red.500">
-                    {selectedRecipe.ingredients
-                      ?.filter(
-                        (ingredient) =>
-                          !userIngredients.some(
-                            (userIngredient) =>
-                              userIngredient.name.toLowerCase() ===
-                              ingredient.toLowerCase()
-                          )
-                      )
-                      .join(", ") || "None"}
-                  </Text>
-                </>
-              )}
               <Text fontSize="lg" fontWeight="bold" mt={4}>
                 Description:
               </Text>
