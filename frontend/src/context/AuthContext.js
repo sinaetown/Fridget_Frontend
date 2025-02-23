@@ -8,9 +8,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      setUser({ token });
-    }
+    setUser(token ? { token } : null);
     setLoading(false);
   }, []);
 

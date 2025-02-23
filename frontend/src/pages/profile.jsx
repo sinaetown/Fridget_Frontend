@@ -15,14 +15,13 @@ import {
   ModalBody,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState, React } from "react";
+import { useState } from "react";
 
 const Profile = () => {
-  // Example user data
   const user = {
-    profilePic: "/logo192.png", // User's profile picture
-    allergies: ["Gluten", "Peanuts", "Dairy"], // User's allergies
-    name: "John Doe", // User's name
+    profilePic: "/logo192.png",
+    allergies: ["Gluten", "Peanuts", "Dairy"],
+    name: "John Doe",
     item: [
       {
         id: 1,
@@ -63,46 +62,7 @@ const Profile = () => {
           "Serve chicken curry over rice.",
         ],
       },
-      {
-        id: 3,
-        label: "Vegetable Stir Fry",
-        img: "/stir-fry.jpg",
-        ingredients: ["rice", "onion", "garlic", "broccoli", "carrot"],
-        description: "A healthy stir fry packed with fresh vegetables.",
-        nutrition: {
-          calories: 350,
-          fat: "10g",
-          protein: "8g",
-          carbs: "55g",
-        },
-        steps: [
-          "Cook rice as per package instructions.",
-          "Stir fry onions, garlic, broccoli, and carrots.",
-          "Combine vegetables with rice and stir-fry together.",
-          "Serve hot.",
-        ],
-      },
-      {
-        id: 4,
-        label: "Tacos",
-        img: "/tacos.jpg",
-        ingredients: ["lettuce", "tortilla", "chicken", "tomato", "cheese"],
-        description:
-          "Delicious tacos filled with seasoned chicken and fresh toppings.",
-        nutrition: {
-          calories: 350,
-          fat: "12g",
-          protein: "25g",
-          carbs: "40g",
-        },
-        steps: [
-          "Cook chicken and season with spices.",
-          "Warm tortillas.",
-          "Fill tortillas with chicken, lettuce, tomato, and cheese.",
-          "Serve with your favorite salsa.",
-        ],
-      },
-    ], // History of recipes
+    ],
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -114,66 +74,73 @@ const Profile = () => {
   };
 
   return (
-    <>
-      <Flex direction="row" p={4}>
-        {/* Profile Section (left 30%) */}
-        <Box
-          w="30%"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          mr={4} // Add some margin between sections
-        >
-          {/* Profile Image */}
+    <Flex direction="column" align="center" p={6} maxW="1200px" mx="auto">
+      {/* Profile Header */}
+      <Flex
+        w="full"
+        bg="gray.100"
+        p={6}
+        borderRadius="lg"
+        align="center"
+        justify="space-between"
+        mb={8}
+        boxShadow="md"
+      >
+        <Flex align="center">
           <Image
             src={user.profilePic}
             alt="Profile Picture"
-            boxSize="150px"
+            boxSize="120px"
             borderRadius="full"
-            mb={4}
+            mr={5}
           />
-          {/* User Name */}
-          <Text fontSize="2xl" fontWeight="bold" color="gray.700">
-            {user.name}
-          </Text>
-
-          {/* Allergies Section */}
-          <Box mt={6}>
-            <Text fontSize="lg" fontWeight="bold" color="gray.700" mb={2}>
-              Allergies:
-            </Text>
-            <VStack spacing={2} align="start">
-              {user.allergies.map((allergy, index) => (
-                <Badge key={index} colorScheme="red" fontSize="md">
-                  {allergy}
-                </Badge>
-              ))}
-            </VStack>
-          </Box>
-        </Box>
-
-        {/* Recipe History Section (right 70%) */}
-        <Box w="70%" p={4}>
-          <Heading fontWeight="bold" color="gray.700" mb={4}>
-            Recipes You've Cooked:
-          </Heading>
-          {/* Recipe List */}
           <Box>
-            {user.item.map((recipe) => (
-              <Box
-                key={recipe.id}
-                mb={4}
-                display="flex"
-                alignItems="center"
-                borderWidth="1px"
-                borderRadius="lg"
-                onClick={() => handleRecipeClick(recipe)}
-                _hover={{
-                  bg: "brand.600",
-                  transform: "scale(1.05)",
-                  transition: "0.2s",
-                }}
-              >
+            <Text fontSize="2xl" fontWeight="bold" color="gray.700">
+              {user.name}
+            </Text>
+            <Text fontSize="md" color="gray.500">
+              Food Enthusiast & Home Chef
+            </Text>
+          </Box>
+        </Flex>
+
+        {/* Allergies */}
+        <Box p={4} bg="white" borderRadius="lg" boxShadow="md">
+          <Text fontSize="lg" fontWeight="bold" mb={2} color="gray.700">
+            Allergies
+          </Text>
+          <Flex gap={2} flexWrap="wrap">
+            {user.allergies.map((allergy, index) => (
+              <Badge key={index} colorScheme="red" fontSize="md" p={2}>
+                {allergy}
+              </Badge>
+            ))}
+          </Flex>
+        </Box>
+      </Flex>
+
+      {/* Recipe History */}
+      <Box w="full">
+        <Heading fontSize="2xl" fontWeight="bold" color="gray.700" mb={4}>
+          Recipes You've Cooked
+        </Heading>
+
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+          {user.item.map((recipe) => (
+            <Box
+              key={recipe.id}
+              bg="white"
+              p={4}
+              borderRadius="lg"
+              boxShadow="md"
+              cursor="pointer"
+              _hover={{
+                boxShadow: "lg",
+                transition: "0.2s",
+              }}
+              onClick={() => handleRecipeClick(recipe)}
+            >
+              <Flex align="center">
                 <Image
                   src={recipe.img}
                   alt={recipe.label}
@@ -181,68 +148,76 @@ const Profile = () => {
                   borderRadius="md"
                   mr={4}
                 />
-                <Text fontSize="md" fontWeight="bold" color="gray.700">
-                  {recipe.label}
-                </Text>
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      </Flex>
+                <Box>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.700">
+                    {recipe.label}
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    {recipe.description}
+                  </Text>
+                </Box>
+              </Flex>
+            </Box>
+          ))}
+        </SimpleGrid>
+      </Box>
+
+      {/* Recipe Modal */}
       {selectedRecipe && (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
           <ModalOverlay backdropFilter="blur(5px)" />
-          <ModalContent>
+          <ModalContent borderRadius="lg">
             <ModalHeader>{selectedRecipe.label}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Image
                 src={selectedRecipe.img}
                 alt={selectedRecipe.label}
-                boxSize="100%"
-                borderRadius="md"
+                borderRadius="lg"
                 mb={4}
               />
-              <Text fontSize="md" mt={4}>
-                <strong>Ingredients:</strong>{" "}
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Ingredients:
+              </Text>
+              <Text fontSize="md" color="gray.700">
                 {selectedRecipe.ingredients.join(", ")}
               </Text>
-              <Text fontSize="md" mt={2}>
-                <strong>Description:</strong> {selectedRecipe.description}
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Description:
               </Text>
-              <Text fontSize="md" mt={2}>
-                <strong>Nutrition:</strong>
+              <Text fontSize="md" color="gray.700">
+                {selectedRecipe.description}
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Nutrition:
+              </Text>
+              <Text fontSize="md" color="gray.700">
                 Calories: {selectedRecipe.nutrition.calories} kcal
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="md" color="gray.700">
                 Fat: {selectedRecipe.nutrition.fat}
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="md" color="gray.700">
                 Protein: {selectedRecipe.nutrition.protein}
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="md" color="gray.700">
                 Carbs: {selectedRecipe.nutrition.carbs}
               </Text>
-
-              <Text fontSize="md" mt={4}>
-                <strong>Step-by-Step Recipe:</strong>
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Steps:
               </Text>
-              <ol>
+              <Box as="ol" pl={5}>
                 {selectedRecipe.steps.map((step, index) => (
-                  <li key={index}>
-                    <Text fontSize="md" mt={1}>
-                      {step}
-                    </Text>
-                  </li>
+                  <Text key={index} fontSize="md" color="gray.700" mt={2}>
+                    {index + 1}. {step}
+                  </Text>
                 ))}
-              </ol>
+              </Box>
             </ModalBody>
           </ModalContent>
         </Modal>
       )}
-    </>
+    </Flex>
   );
 };
 
