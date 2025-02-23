@@ -192,7 +192,7 @@ const Ingredients = () => {
   return (
     <Container maxW="container.xl" py={5}>
       <ToastContainer />
-      <Heading mb={4}>Ingredients</Heading>
+      <Heading mb={4}>My Ingredients</Heading>
 
       {/* Add Ingredient Form */}
       <Box

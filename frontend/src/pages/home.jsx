@@ -13,8 +13,10 @@ import {
   useDisclosure,
   Input,
   Flex,
+  Heading,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
+import { SearchIcon } from "@chakra-ui/icons";
 
 const Home = () => {
   const ingredientsAvailable = [
@@ -98,21 +100,32 @@ const Home = () => {
   };
 
   return (
-    <Box maxW="1200px" mx="auto" py={5}>
+    <Box maxW="1200px" mx="auto">
+      <Box textAlign="center" mb={"30px"}>
+        <Heading fontSize="4xl" fontWeight="bold" color="gray.800">
+          What should you cook today?
+        </Heading>
+      </Box>
       {/* Search Bar */}
-      <Flex justify="center" mb={6}>
-        <Input
-          placeholder="Search for a recipe..."
-          size="lg"
-          width="50%"
-          bg="white"
-          borderRadius="full"
-          boxShadow="md"
-          _focus={{ borderColor: "green.400", boxShadow: "lg" }}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <Flex justify="center" mb={16} align="center">
+        <Box position="relative" width="50%">
+          <Input
+            placeholder="Search for a recipe..."
+            size="lg"
+            bg="white"
+            border="1px solid black"
+            borderRadius="full"
+            boxShadow="sm"
+            transition="all 0.3s ease-in-out"
+            value={searchTerm} // Bind the input value to state
+            onChange={(e) => setSearchTerm(e.target.value)} // Update state on change
+            _focus={{
+              borderColor: "green.400",
+              boxShadow: "0 0 10px rgba(72, 187, 120, 0.5)",
+            }}
+          />
+        </Box>
       </Flex>
-
       {/* Recipe Cards with Initial Animation */}
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
         <AnimatePresence>
