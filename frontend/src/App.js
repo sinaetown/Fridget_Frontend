@@ -53,7 +53,7 @@ function App() {
 
       {/* Footer (Optional: Hide on Login & Signup) */}
       {!hideNav && (
-        <Box as="footer" py={4} textAlign="center">
+        <Box as="footer" py={4} mt={20} textAlign="center">
           <Text fontSize="sm">© 2025 My App. All rights reserved.</Text>
         </Box>
       )}

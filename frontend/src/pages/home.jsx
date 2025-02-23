@@ -1,4 +1,4 @@
-import { useState, React } from "react";
+import { useState } from "react";
 import {
   Box,
   Image,
@@ -11,6 +11,8 @@ import {
   ModalCloseButton,
   ModalBody,
   useDisclosure,
+  Input,
+  Flex,
 } from "@chakra-ui/react";
 
 const Home = () => {
@@ -66,46 +68,15 @@ const Home = () => {
         "Serve chicken curry over rice.",
       ],
     },
-    {
-      id: 3,
-      label: "Vegetable Stir Fry",
-      img: "/stir-fry.jpg",
-      ingredients: ["rice", "onion", "garlic", "broccoli", "carrot"],
-      description: "A healthy stir fry packed with fresh vegetables.",
-      nutrition: {
-        calories: 350,
-        fat: "10g",
-        protein: "8g",
-        carbs: "55g",
-      },
-      steps: [
-        "Cook rice as per package instructions.",
-        "Stir fry onions, garlic, broccoli, and carrots.",
-        "Combine vegetables with rice and stir-fry together.",
-        "Serve hot.",
-      ],
-    },
-    {
-      id: 4,
-      label: "Tacos",
-      img: "/tacos.jpg",
-      ingredients: ["lettuce", "tortilla", "chicken", "tomato", "cheese"],
-      description:
-        "Delicious tacos filled with seasoned chicken and fresh toppings.",
-      nutrition: {
-        calories: 350,
-        fat: "12g",
-        protein: "25g",
-        carbs: "40g",
-      },
-      steps: [
-        "Cook chicken and season with spices.",
-        "Warm tortillas.",
-        "Fill tortillas with chicken, lettuce, tomato, and cheese.",
-        "Serve with your favorite salsa.",
-      ],
-    },
   ];
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const filteredItems = items.filter((item) =>
+    item.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const calculatePercentage = (ingredients) => {
     const totalIngredients = ingredients.length;
@@ -115,117 +86,127 @@ const Home = () => {
     return Math.round((availableIngredients / totalIngredients) * 100);
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
-
-  // Function to handle recipe click and open modal
   const handleRecipeClick = (item) => {
     setSelectedRecipe(item);
     onOpen();
   };
 
   return (
-    <>
-      <SimpleGrid
-        columns={{ base: 1, md: 2, lg: 3 }} // Adjust columns based on screen width
-        spacingX={4}
-        spacingY={10}
-      >
-        {items.map((item) => {
-          const percentage = calculatePercentage(item.ingredients);
-          return (
-            <Box
-              key={item.id}
-              w="100%"
-              maxW="300px"
-              h="350px"
-              bg="brand.200"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              flexDirection="column"
-              borderRadius="md"
-              boxShadow="md"
-              _hover={{
-                bg: "brand.600",
-                transform: "scale(1.05)",
-                transition: "0.2s",
-              }}
-              onClick={() => handleRecipeClick(item)}
-            >
-              <Image
-                src={item.img}
-                alt={item.label}
-                boxSize="270px"
-                border="2px solid"
-                borderColor="brand.800"
-                borderRadius="md"
-              />
-              <Text fontSize="lg" fontWeight="bold" color="gray.700">
-                {item.label}
-              </Text>
-              <Text fontSize="md" fontWeight="bold" color="whiteAlpha.800">
-                {percentage}% of ingredients you have
-              </Text>
-            </Box>
-          );
-        })}
+    <Box maxW="1200px" mx="auto" py={5}>
+      {/* Search Bar */}
+      <Flex justify="center" mb={6}>
+        <Input
+          placeholder="Search for a recipe..."
+          size="lg"
+          width="50%"
+          bg="white"
+          borderRadius="full"
+          boxShadow="md"
+          _focus={{ borderColor: "green.400", boxShadow: "lg" }}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </Flex>
+
+      {/* Recipe Cards */}
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+        {filteredItems.length > 0 ? (
+          filteredItems.map((item) => {
+            const percentage = calculatePercentage(item.ingredients);
+            return (
+              <Box
+                key={item.id}
+                maxW="300px"
+                h="400px"
+                bg="white"
+                boxShadow="md"
+                borderRadius="lg"
+                p={4}
+                cursor="pointer"
+                _hover={{
+                  boxShadow: "xl",
+                  transition: "0.2s",
+                }}
+                onClick={() => handleRecipeClick(item)}
+              >
+                <Image
+                  src={item.img}
+                  alt={item.label}
+                  borderRadius="md"
+                  objectFit="cover"
+                  boxSize="100%"
+                />
+                <Text fontSize="xl" fontWeight="bold" mt={8}>
+                  {item.label}
+                </Text>
+                <Text fontSize="md" color="gray.600">
+                  {percentage}% of ingredients available
+                </Text>
+              </Box>
+            );
+          })
+        ) : (
+          <Text fontSize="xl" textAlign="center" color="gray.600">
+            No matching recipes found.
+          </Text>
+        )}
       </SimpleGrid>
 
+      {/* Recipe Modal */}
       {selectedRecipe && (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
           <ModalOverlay backdropFilter="blur(5px)" />
-          <ModalContent>
+          <ModalContent borderRadius="lg">
             <ModalHeader>{selectedRecipe.label}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Image
                 src={selectedRecipe.img}
                 alt={selectedRecipe.label}
-                boxSize="100%"
-                borderRadius="md"
+                borderRadius="lg"
                 mb={4}
               />
-              <Text fontSize="md" mt={4}>
-                <strong>Ingredients:</strong>{" "}
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Ingredients:
+              </Text>
+              <Text fontSize="md" color="gray.700">
                 {selectedRecipe.ingredients.join(", ")}
               </Text>
-              <Text fontSize="md" mt={2}>
-                <strong>Description:</strong> {selectedRecipe.description}
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Description:
               </Text>
-              <Text fontSize="md" mt={2}>
-                <strong>Nutrition:</strong>
+              <Text fontSize="md" color="gray.700">
+                {selectedRecipe.description}
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Nutrition:
+              </Text>
+              <Text fontSize="md" color="gray.700">
                 Calories: {selectedRecipe.nutrition.calories} kcal
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="md" color="gray.700">
                 Fat: {selectedRecipe.nutrition.fat}
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="md" color="gray.700">
                 Protein: {selectedRecipe.nutrition.protein}
               </Text>
-              <Text fontSize="md" mt={1}>
+              <Text fontSize="md" color="gray.700">
                 Carbs: {selectedRecipe.nutrition.carbs}
               </Text>
-
-              <Text fontSize="md" mt={4}>
-                <strong>Step-by-Step Recipe:</strong>
+              <Text fontSize="lg" fontWeight="bold" mt={4}>
+                Steps:
               </Text>
-              <ol>
+              <Box as="ol" pl={5}>
                 {selectedRecipe.steps.map((step, index) => (
-                  <li key={index}>
-                    <Text fontSize="md" mt={1}>
-                      {step}
-                    </Text>
-                  </li>
+                  <Text key={index} fontSize="md" color="gray.700" mt={2}>
+                    {index + 1}. {step}
+                  </Text>
                 ))}
-              </ol>
+              </Box>
             </ModalBody>
           </ModalContent>
         </Modal>
       )}
-    </>
+    </Box>
   );
 };
 

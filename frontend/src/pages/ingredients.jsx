@@ -57,6 +57,22 @@ const Ingredients = () => {
   const [ingredientToDelete, setIngredientToDelete] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const API_URL = "http://your-backend-url/api/ingredients";
+
+  const fetchIngredients = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error("Failed to fetch ingredients");
+      }
+      const data = await response.json();
+      setIngredients(data);
+    } catch (error) {
+      console.error("Error fetching ingredients:", error);
+      toast.error("Failed to fetch ingredients!", { position: "bottom-right" });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!newIngredient || !selectedCategory) return;
@@ -70,17 +86,10 @@ const Ingredients = () => {
     setIngredients([ingredient, ...ingredients]);
     setNewIngredient("");
     setSelectedCategory("");
-    // toast("Customized Toast!", {
-    //   style: {
-    //     backgroundColor: "#159638", // your custom background color
-    //     color: "#fff", // custom text color
-    //     fontSize: "16px",
-    //   },
-    // });
-    toast("New ingredient added!", {
+    toast.success("New ingredient added!", {
       position: "bottom-right",
       autoClose: 4000,
-      hideProgressBar: true,
+      hideProgressBar: false,
       closeOnClick: false,
       pauseOnHover: true,
       draggable: true,
@@ -88,43 +97,40 @@ const Ingredients = () => {
     });
   };
 
-  // Open modal and set the ingredient to be deleted
-  const handleDeleteClick = (ingredient) => {
-    setIngredientToDelete(ingredient);
-    onOpen();
+  const deleteIngredient = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete ingredient");
+      }
+      setIngredients(ingredients.filter((ingredient) => ingredient.id !== id));
+      toast("Successfully deleted ingredient!", {
+        position: "bottom-right",
+        autoClose: 4000,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error("Error deleting ingredient:", error);
+      toast.error("Failed to delete ingredient!", { position: "bottom-right" });
+    }
   };
 
-  // Confirm deletion and remove the ingredient
+  /** Confirm deletion */
   const confirmDelete = () => {
     if (ingredientToDelete) {
-      setIngredients(
-        ingredients.filter(
-          (ingredient) => ingredient.id !== ingredientToDelete.id
-        )
-      );
+      deleteIngredient(ingredientToDelete.id);
       setIngredientToDelete(null);
       onClose();
     }
-    toast("Successfully deleted ingredient!", {
-      position: "bottom-right",
-      autoClose: 4000,
-      hideProgressBar: true,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
   };
 
   return (
     <Container maxW="container.xl" py={5}>
-      <ToastContainer
-        toastStyle={{
-          backgroundColor: "#159638",
-          color: "white",
-          fontWeight: "800",
-        }}
-      />
+      <ToastContainer />
       <Heading mb={4}>Ingredients</Heading>
       <Box
         as="form"
@@ -177,7 +183,10 @@ const Ingredients = () => {
                       </Box>
                       <CloseButton
                         size="sm"
-                        onClick={() => handleDeleteClick(ingredient)}
+                        onClick={() => {
+                          setIngredientToDelete(ingredient);
+                          onOpen();
+                        }}
                       />
                     </Flex>
                   </Box>
