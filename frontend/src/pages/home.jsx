@@ -29,8 +29,11 @@ const Home = () => {
     !localStorage.getItem("homeLoaded")
   );
 
-  const apiKey = "AIzaSyDsKciyC6XgI1DK9tfpXVrz-MA3obH-Qb4";
-  const searchEngineId = "d4ed4b7e4ceb645c9";
+  // const apiKey = "AIzaSyDsKciyC6XgI1DK9tfpXVrz-MA3obH-Qb4";
+  const apiKey = "AIzaSyBCDfR6zg8yTvPssHCXU_sfU9EvK3ZQmbU";
+
+  // const searchEngineId = "d4ed4b7e4ceb645c9";
+  const searchEngineId = "1100c7fd8d38c42eb";
 
   const [imageUrls, setImageUrls] = useState([]);
 
@@ -45,57 +48,38 @@ const Home = () => {
 
   const { user } = useContext(AuthContext);
   // const [userIngredients, setUserIngredients] = useState([]);
+  const [temp, setTemp] = useState([]);
 
   // Search images based on menuName
   const searchImages = async (menuName) => {
-    if (!menuName) return;
-
-    setLoading(true);
-    setError(null);
-    setImageUrls([]);
-
-    const query = encodeURIComponent(menuName); // Properly encode the search query
-    const apiUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${query}&searchType=image`;
-
+    if (!menuName) return null;
     try {
+      const query = encodeURIComponent(menuName);
+
+      const apiUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${query}&searchType=image`;
       const response = await axios.get(apiUrl);
-      if (response.data.items) {
-        return response.data.items[0].link; // Get the first image URL
-      } else {
-        setError("No images found for this menu item.");
-        return null;
-      }
-    } catch (err) {
-      setError("Error fetching images. Please try again.");
-      console.error("Error fetching images:", err);
+      return response.data.items?.[0]?.link || null;
+    } catch (error) {
+      console.error("Error fetching images:", error);
       return null;
-    } finally {
-      setLoading(false);
     }
   };
 
   const fetchRecipes = async () => {
-    console.log("fetching data hererererererere");
-
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch("http://localhost:8080/recipe/recommend", {
+      const response = await fetch(API_URL, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          Authorization: user?.token ? `Bearer ${user.token}` : "",
         },
       });
 
       const data = await response.json();
-      console.log("DATA: ", data);
-
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(data.message || "Failed to fetch recipes");
-      }
 
-      setRecipes(data);
+      setRecipes(data); // Set recipes before fetching images
       setLoading(false);
     } catch (error) {
       console.error("Error fetching recipes:", error.message);
@@ -104,58 +88,86 @@ const Home = () => {
     }
   };
 
-  // Call the function inside useEffect
+  const fetchImagesForMenuItems = async () => {
+    if (recipes.length === 0) return; // Ensure recipes are available
+
+    const updatedItems = await Promise.all(
+      recipes.map(async (item) => {
+        const imgUrl = await searchImages(item.name);
+        return { ...item, img: imgUrl || item.img };
+      })
+    );
+
+    // setRecipes(updatedItems);
+    setTemp(updatedItems);
+  };
+
+  const [fetchCount, setFetchCount] = useState(0);
+
   useEffect(() => {
-    fetchRecipes();
-    if (!user?.token) return;
+    if (fetchCount < 1) {
+      fetchRecipes();
+      console.log("yes");
+      setFetchCount((prevCount) => prevCount + 1);
+    }
+  }, [fetchCount]);
 
-    // if (recipes.length === 0) return;
-
-    const fetchImagesForMenuItems = async () => {
-      const updatedItems = await Promise.all(
-        recipes.map(async (item) => {
-          const imgUrl = await searchImages(item.name);
-          return { ...item, img: imgUrl || item.img };
-        })
-      );
-      setRecipes((prevRecipes) =>
-        prevRecipes.map((recipe, index) => ({
-          ...recipe,
-          img: updatedItems[index].img,
-        }))
-      );
-    };
-
+  useEffect(() => {
     fetchImagesForMenuItems();
+    console.log("WAIT");
+  }, [recipes]);
+  // Call the function inside useEffect
+  // useEffect(() => {
+  //   fetchRecipes();
+  //   if (!user?.token) return;
 
-    // const fetchIngredients = async () => {
-    //   console.log("FETCHING...");
+  //   // if (recipes.length === 0) return;
 
-    //   try {
-    //     const response = await fetch(FETCH_API_URL, {
-    //       method: "GET",
-    //       headers: {
-    //         Authorization: `Bearer ${user.token}`,
-    //       },
-    //     });
+  //   const fetchImagesForMenuItems = async () => {
+  //     const updatedItems = await Promise.all(
+  //       recipes.map(async (item) => {
+  //         const imgUrl = await searchImages(item.name);
+  //         return { ...item, img: imgUrl || item.img };
+  //       })
+  //     );
+  //     setRecipes((prevRecipes) =>
+  //       prevRecipes.map((recipe, index) => ({
+  //         ...recipe,
+  //         img: updatedItems[index].img,
+  //       }))
+  //     );
+  //   };
 
-    //     if (!response.ok) {
-    //       throw new Error("Failed to fetch ingredients");
-    //     }
+  //   fetchImagesForMenuItems();
 
-    //     const data = await response.json();
-    //     setUserIngredients(data || []);
-    //   } catch (error) {
-    //     console.error("Error fetching ingredients:", error);
-    //     toast.error("Failed to fetch ingredients!", {
-    //       position: "bottom-right",
-    //       autoClose: 4000,
-    //     });
-    //   }
-    // };
+  //   // const fetchIngredients = async () => {
+  //   //   console.log("FETCHING...");
 
-    // fetchIngredients();
-  }, []);
+  //   //   try {
+  //   //     const response = await fetch(FETCH_API_URL, {
+  //   //       method: "GET",
+  //   //       headers: {
+  //   //         Authorization: `Bearer ${user.token}`,
+  //   //       },
+  //   //     });
+
+  //   //     if (!response.ok) {
+  //   //       throw new Error("Failed to fetch ingredients");
+  //   //     }
+
+  //   //     const data = await response.json();
+  //   //     setUserIngredients(data || []);
+  //   //   } catch (error) {
+  //   //     console.error("Error fetching ingredients:", error);
+  //   //     toast.error("Failed to fetch ingredients!", {
+  //   //       position: "bottom-right",
+  //   //       autoClose: 4000,
+  //   //     });
+  //   //   }
+  //   // };
+
+  //   // fetchIngredients();
+  // }, []);
 
   // const [items, setItems] = useState([
   //   {
@@ -226,7 +238,10 @@ const Home = () => {
 
   // const displayedRecipes = error ? userIngredients : recipes;
 
-  const filteredRecipes = recipes.filter((recipe) =>
+  // const filteredRecipes = recipes.filter((recipe) =>
+  //   recipe.name.includes(searchTerm.toLowerCase())
+  // );
+  const filteredRecipes = temp.filter((recipe) =>
     recipe.name.includes(searchTerm.toLowerCase())
   );
 
