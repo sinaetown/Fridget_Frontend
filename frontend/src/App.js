@@ -1,5 +1,12 @@
 import React, { useContext } from "react";
-import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Link,
+  useLocation,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import { Container, Box, Heading, Text, Button } from "@chakra-ui/react";
 import Home from "./pages/home";
 import Ingredients from "./pages/ingredients";
@@ -11,14 +18,15 @@ import AuthContext from "./context/AuthContext";
 
 function App() {
   const location = useLocation();
-  // const { user } = useContext(AuthContext); // Get user from context
-  const user = {};
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext); // Get user & logout from context
+  const navigate = useNavigate(); // 👈 Add this for navigation
+
   const hideNav =
     location.pathname === "/login" || location.pathname === "/signup";
 
   const handleLogout = () => {
     logout(); // Clears the token from localStorage
+    navigate("/login"); // 👈 Redirect to login after logout
   };
 
   return (
@@ -47,7 +55,7 @@ function App() {
                 <Button as={Link} to="/profile" variant="link" mr={4}>
                   Profile
                 </Button>
-                <Button as={Link} to="/login" variant="link">
+                <Button onClick={handleLogout} variant="link" colorScheme="red">
                   Logout
                 </Button>
               </>
@@ -67,11 +75,11 @@ function App() {
           <Route path="/signup" element={<Signup />} />
 
           {/* Protected Routes (Includes Home) */}
-          {/* <Route element={<ProtectedRoute />}> */}
-          <Route path="/" element={<Home />} />
-          <Route path="/ingredients" element={<Ingredients />} />
-          <Route path="/profile" element={<Profile />} />
-          {/* </Route> */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/ingredients" element={<Ingredients />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
 
           {/* Redirect unknown routes to Home */}
           <Route path="*" element={<Navigate to="/" />} />

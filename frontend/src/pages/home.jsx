@@ -116,12 +116,15 @@ const Home = () => {
               <Box
                 key={item.id}
                 maxW="300px"
-                h="400px"
+                h="320px"
                 bg="white"
                 boxShadow="md"
                 borderRadius="lg"
                 p={4}
                 cursor="pointer"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
                 _hover={{
                   boxShadow: "xl",
                   transition: "0.2s",
@@ -131,11 +134,12 @@ const Home = () => {
                 <Image
                   src={item.img}
                   alt={item.label}
+                  width="250px"
+                  height="200px"
                   borderRadius="md"
                   objectFit="cover"
-                  boxSize="100%"
                 />
-                <Text fontSize="xl" fontWeight="bold" mt={8}>
+                <Text fontSize="xl" fontWeight="bold" mt={4} textAlign="center">
                   {item.label}
                 </Text>
                 <Text fontSize="md" color="gray.600">
@@ -158,11 +162,14 @@ const Home = () => {
           <ModalContent borderRadius="lg">
             <ModalHeader>{selectedRecipe.label}</ModalHeader>
             <ModalCloseButton />
-            <ModalBody>
+            <ModalBody maxHeight="500px" overflowY="auto">
               <Image
                 src={selectedRecipe.img}
                 alt={selectedRecipe.label}
+                width="100%"
+                maxHeight="350px"
                 borderRadius="lg"
+                objectFit="contain"
                 mb={4}
               />
               <Text fontSize="lg" fontWeight="bold" mt={4}>

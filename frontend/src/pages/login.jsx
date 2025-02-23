@@ -12,14 +12,12 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-import Menu from "@mui/joy/Menu";
-import MenuButton from "@mui/joy/MenuButton";
-import MenuItem from "@mui/joy/MenuItem";
-import Dropdown from "@mui/joy/Dropdown";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const navigate = useNavigate(); // Initialize navigation
   const { login } = useContext(AuthContext);
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ userId: "", userPassword: "" });
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -30,8 +28,9 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
-      const response = await fetch("https://your-api.com/login", {
+      const response = await fetch("http://localhost:8080/doLogin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,7 +44,8 @@ const LoginPage = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      login(data.token);
+      login(data.result.token);
+      navigate("/home");
       console.log("Login successful, token stored");
     } catch (err) {
       setError(err.message);
@@ -70,8 +70,8 @@ const LoginPage = () => {
           <FormControl isRequired>
             <FormLabel>Username</FormLabel>
             <Input
-              name="username"
-              value={form.username}
+              name="userId"
+              value={form.userId}
               onChange={handleChange}
               placeholder="Enter username"
             />
@@ -80,8 +80,8 @@ const LoginPage = () => {
             <FormLabel>Password</FormLabel>
             <Input
               type="password"
-              name="password"
-              value={form.password}
+              name="userPassword"
+              value={form.userPassword}
               onChange={handleChange}
               placeholder="Enter password"
             />
