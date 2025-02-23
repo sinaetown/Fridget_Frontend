@@ -14,9 +14,6 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
 
-    console.log("TOKEN IN AUTH CONTEXT: ", token);
-    console.log("USER ID IN AUTH CONTEXT: ", userId);
-
     if (token && userId) {
       setUser({ token, userId });
     } else {
@@ -34,7 +31,6 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
-    console.log("LOGGING OUT");
 
     setUser(null);
   };

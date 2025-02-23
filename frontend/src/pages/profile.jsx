@@ -16,9 +16,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { motion } from "framer-motion"; // Import Framer Motion
 
 const Profile = () => {
   const userId = localStorage.getItem("userId") || "Guest"; // Get username from localStorage
+
   const user = {
     profilePic: "/logo192.png",
     allergies: ["Gluten", "Peanuts", "Dairy"],
@@ -101,25 +103,31 @@ const Profile = () => {
           </Box>
         </Flex>
 
-        {/* Allergies */}
-        <Box p={4} bg="white" borderRadius="lg" boxShadow="md">
-          <Text fontSize="lg" fontWeight="bold" mb={2} color="gray.700">
-            Allergies
-          </Text>
-          <Flex gap={2} flexWrap="wrap">
-            {user.allergies.length > 0 ? (
-              user.allergies.map((allergy, index) => (
-                <Badge key={index} colorScheme="red" fontSize="md" p={2}>
-                  {allergy}
-                </Badge>
-              ))
-            ) : (
-              <Text fontSize="md" color="gray.500">
-                No allergies listed.
-              </Text>
-            )}
-          </Flex>
-        </Box>
+        {/* Allergies Section with Animation */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Box p={4} bg="white" borderRadius="lg" boxShadow="md">
+            <Text fontSize="lg" fontWeight="bold" mb={2} color="gray.700">
+              Allergies
+            </Text>
+            <Flex gap={2} flexWrap="wrap">
+              {user.allergies.length > 0 ? (
+                user.allergies.map((allergy, index) => (
+                  <Badge key={index} colorScheme="red" fontSize="md" p={2}>
+                    {allergy}
+                  </Badge>
+                ))
+              ) : (
+                <Text fontSize="md" color="gray.500">
+                  No allergies listed.
+                </Text>
+              )}
+            </Flex>
+          </Box>
+        </motion.div>
       </Flex>
 
       {/* Recipe History */}
@@ -129,38 +137,44 @@ const Profile = () => {
         </Heading>
 
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-          {user.item.map((recipe) => (
-            <Box
+          {user.item.map((recipe, index) => (
+            <motion.div
               key={recipe.id}
-              bg="white"
-              p={4}
-              borderRadius="lg"
-              boxShadow="md"
-              cursor="pointer"
-              _hover={{
-                boxShadow: "lg",
-                transition: "0.2s",
-              }}
-              onClick={() => handleRecipeClick(recipe)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <Flex align="center">
-                <Image
-                  src={recipe.img}
-                  alt={recipe.label}
-                  boxSize="100px"
-                  borderRadius="md"
-                  mr={4}
-                />
-                <Box>
-                  <Text fontSize="lg" fontWeight="bold" color="gray.700">
-                    {recipe.label}
-                  </Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {recipe.description}
-                  </Text>
-                </Box>
-              </Flex>
-            </Box>
+              <Box
+                bg="white"
+                p={4}
+                borderRadius="lg"
+                boxShadow="md"
+                cursor="pointer"
+                _hover={{
+                  boxShadow: "lg",
+                  transition: "0.2s",
+                }}
+                onClick={() => handleRecipeClick(recipe)}
+              >
+                <Flex align="center">
+                  <Image
+                    src={recipe.img}
+                    alt={recipe.label}
+                    boxSize="100px"
+                    borderRadius="md"
+                    mr={4}
+                  />
+                  <Box>
+                    <Text fontSize="lg" fontWeight="bold" color="gray.700">
+                      {recipe.label}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      {recipe.description}
+                    </Text>
+                  </Box>
+                </Flex>
+              </Box>
+            </motion.div>
           ))}
         </SimpleGrid>
       </Box>
