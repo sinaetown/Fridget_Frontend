@@ -9,6 +9,8 @@ import {
   Text,
   Flex,
   CloseButton,
+  VStack,
+  useDisclosure,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -16,8 +18,8 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
-  useDisclosure,
 } from "@chakra-ui/react";
+import { motion } from "framer-motion"; // Import Framer Motion
 import CustomDropdown from "../components/CustomDropdown";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -57,22 +59,6 @@ const Ingredients = () => {
   const [ingredientToDelete, setIngredientToDelete] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const API_URL = "http://your-backend-url/api/ingredients";
-
-  const fetchIngredients = async () => {
-    try {
-      const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error("Failed to fetch ingredients");
-      }
-      const data = await response.json();
-      setIngredients(data);
-    } catch (error) {
-      console.error("Error fetching ingredients:", error);
-      toast.error("Failed to fetch ingredients!", { position: "bottom-right" });
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!newIngredient || !selectedCategory) return;
@@ -83,48 +69,29 @@ const Ingredients = () => {
       category: selectedCategory,
     };
 
-    setIngredients([ingredient, ...ingredients]);
+    setIngredients([...ingredients, ingredient]);
     setNewIngredient("");
     setSelectedCategory("");
+
     toast.success("New ingredient added!", {
       position: "bottom-right",
       autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
     });
   };
 
-  const deleteIngredient = async (id) => {
-    try {
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete ingredient");
-      }
-      setIngredients(ingredients.filter((ingredient) => ingredient.id !== id));
-      toast("Successfully deleted ingredient!", {
-        position: "bottom-right",
-        autoClose: 4000,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    } catch (error) {
-      console.error("Error deleting ingredient:", error);
-      toast.error("Failed to delete ingredient!", { position: "bottom-right" });
-    }
-  };
-
-  /** Confirm deletion */
   const confirmDelete = () => {
     if (ingredientToDelete) {
-      deleteIngredient(ingredientToDelete.id);
+      setIngredients(
+        ingredients.filter(
+          (ingredient) => ingredient.id !== ingredientToDelete.id
+        )
+      );
       setIngredientToDelete(null);
       onClose();
+      toast.success("Successfully deleted ingredient!", {
+        position: "bottom-right",
+        autoClose: 4000,
+      });
     }
   };
 
@@ -132,10 +99,12 @@ const Ingredients = () => {
     <Container maxW="container.xl" py={5}>
       <ToastContainer />
       <Heading mb={4}>Ingredients</Heading>
+
+      {/* Add Ingredient Form */}
       <Box
         as="form"
         onSubmit={handleSubmit}
-        mb={4}
+        mb={6}
         display="flex"
         gap={4}
         alignItems="center"
@@ -151,55 +120,81 @@ const Ingredients = () => {
           onChange={setSelectedCategory}
           placeholder="Select category"
         />
-        <Button w={60} type="submit" colorScheme="brand">
+        <Button w={60} type="submit" colorScheme="green">
           Add
         </Button>
       </Box>
-      {FOOD_CATEGORIES.map((category) => {
-        const categoryIngredients = ingredients.filter(
-          (ingredient) => ingredient.category === category
-        );
-        return (
-          <Box key={category} mb={6}>
-            <Heading size="lg" mb={2}>
-              {category}
-            </Heading>
-            {categoryIngredients.length > 0 ? (
-              <Grid templateColumns="repeat(4, 1fr)" gap={6} width="100%">
-                {categoryIngredients.map((ingredient) => (
-                  <Box
-                    key={ingredient.id}
-                    p={4}
-                    shadow="md"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                  >
-                    <Flex justify="space-between" align="center">
-                      <Box>
-                        <Heading size="md">{ingredient.name}</Heading>
-                        <Text fontSize="sm" color="gray.600">
-                          {ingredient.category}
-                        </Text>
-                      </Box>
-                      <CloseButton
-                        size="sm"
-                        onClick={() => {
-                          setIngredientToDelete(ingredient);
-                          onOpen();
-                        }}
-                      />
-                    </Flex>
-                  </Box>
-                ))}
-              </Grid>
-            ) : (
-              <Text fontSize="md" color="gray.500">
-                No ingredients in this category.
-              </Text>
-            )}
-          </Box>
-        );
-      })}
+
+      {/* Categories in a Single Row */}
+      <Grid
+        templateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+        gap={6}
+        mb={6}
+      >
+        {FOOD_CATEGORIES.map((category, index) => {
+          const categoryIngredients = ingredients.filter(
+            (ingredient) => ingredient.category === category
+          );
+
+          return (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
+              <Box
+                borderWidth="1px"
+                borderRadius="lg"
+                p={4}
+                bg="gray.50"
+                shadow="sm"
+              >
+                {/* Category Title */}
+                <Text fontSize="lg" fontWeight="bold" textAlign="center" mb={2}>
+                  {category}
+                </Text>
+
+                {/* Ingredients under Category */}
+                <VStack spacing={2} align="stretch">
+                  {categoryIngredients.length > 0 ? (
+                    categoryIngredients.map((ingredient) => (
+                      <motion.div
+                        key={ingredient.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Flex
+                          bg="white"
+                          p={2}
+                          borderRadius="md"
+                          shadow="xs"
+                          justify="space-between"
+                          align="center"
+                        >
+                          <Text fontSize="md">{ingredient.name}</Text>
+                          <CloseButton
+                            size="sm"
+                            onClick={() => {
+                              setIngredientToDelete(ingredient);
+                              onOpen();
+                            }}
+                          />
+                        </Flex>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <Text fontSize="sm" color="gray.500" textAlign="center">
+                      No ingredients
+                    </Text>
+                  )}
+                </VStack>
+              </Box>
+            </motion.div>
+          );
+        })}
+      </Grid>
 
       {/* Confirmation Modal */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
