@@ -19,10 +19,16 @@ import {
 import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
 import { toast } from "react-toastify";
 import AuthContext from "../context/AuthContext";
+import axios from "axios";
 
 const Home = () => {
   const API_URL = "http://localhost:8080/recipe/recommend";
   const FETCH_API_URL = "http://localhost:8080/user/ingredients";
+
+  const apiKey = "AIzaSyDsKciyC6XgI1DK9tfpXVrz-MA3obH-Qb4";
+  const searchEngineId = "d4ed4b7e4ceb645c9";
+
+  const [imageUrls, setImageUrls] = useState([]);
 
   const [recipes, setRecipes] = useState([]); // Stores API recipes
   const [loading, setLoading] = useState(true); // Loading state
@@ -35,6 +41,34 @@ const Home = () => {
 
   const { user } = useContext(AuthContext);
   const [userIngredients, setUserIngredients] = useState([]);
+
+  // Search images based on menuName
+  const searchImages = async (menuName) => {
+    if (!menuName) return;
+
+    setLoading(true);
+    setError(null);
+    setImageUrls([]);
+
+    const query = encodeURIComponent(menuName); // Properly encode the search query
+    const apiUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${query}&searchType=image`;
+
+    try {
+      const response = await axios.get(apiUrl);
+      if (response.data.items) {
+        return response.data.items[0].link; // Get the first image URL
+      } else {
+        setError("No images found for this menu item.");
+        return null;
+      }
+    } catch (err) {
+      setError("Error fetching images. Please try again.");
+      console.error("Error fetching images:", err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchRecipes = async () => {
     try {
@@ -69,6 +103,18 @@ const Home = () => {
     fetchRecipes();
     if (!user?.token) return;
 
+    const fetchImagesForMenuItems = async () => {
+      const updatedItems = await Promise.all(
+        items.map(async (item) => {
+          const imgUrl = await searchImages(item.name);
+          return { ...item, img: imgUrl || item.img };
+        })
+      );
+      setItems(updatedItems);
+    };
+
+    fetchImagesForMenuItems();
+
     const fetchIngredients = async () => {
       try {
         const response = await fetch(FETCH_API_URL, {
@@ -95,13 +141,11 @@ const Home = () => {
 
     fetchIngredients();
   }, []);
-
-  // Dummy Data (Used when API fails)
-  const items = [
+  const [items, setItems] = useState([
     {
       id: 1,
-      name: "Spaghetti Bolognese",
-      img: "https://images.ctfassets.net/uexfe9h31g3m/6QtnhruEFi8qgEyYAICkyS/ab01e9b1da656f35dd1a721c810162a0/Spaghetti_bolognese_4x3_V2_LOW_RES.jpg?w=768&h=512&fm=webp&fit=thumb&q=90",
+      name: "Orange Chicken",
+      img: "", // Initially empty, will be populated
       ingredients: ["spaghetti", "beef", "tomato", "onion", "garlic"],
       description: "A classic Italian pasta dish with rich meat sauce.",
       nutrition: { calories: 500, fat: "20g", protein: "30g", carbs: "60g" },
@@ -109,7 +153,7 @@ const Home = () => {
     {
       id: 2,
       name: "Chicken Curry",
-      img: "https://slowcookerfoodie.com/wp-content/uploads/2022/03/Spicy-Chicken-Curry-500x500.jpg",
+      img: "",
       ingredients: ["chicken", "onion", "garlic", "curry powder", "rice"],
       description: "A flavorful and aromatic curry with tender chicken.",
       nutrition: { calories: 450, fat: "15g", protein: "35g", carbs: "50g" },
@@ -117,7 +161,7 @@ const Home = () => {
     {
       id: 3,
       name: "Vegetable Stir-Fry",
-      img: "https://www.mccormick.com/-/media/project/oneweb/mccormick-us/mccormick/recipe-images/stir-fry-vegetables-recipe-800x800.jpg?rev=56e6eec8c7b14887a5c238eb35a20da9&vd=20240606T181334Z&extension=webp&hash=FF02DA13F3817A968D847A8A85B1E48D",
+      img: "",
       ingredients: ["bell pepper", "broccoli", "carrot", "soy sauce", "garlic"],
       description: "A quick and healthy vegetable stir-fry with savory sauce.",
       nutrition: { calories: 300, fat: "10g", protein: "8g", carbs: "45g" },
@@ -125,7 +169,7 @@ const Home = () => {
     {
       id: 4,
       name: "Avocado Toast",
-      img: "https://veganhuggs.com/wp-content/uploads/2023/02/white-bean-avocado-toast.jpg",
+      img: "",
       ingredients: ["bread", "avocado", "egg", "cheese"],
       description: "A healthy and delicious toast topped with avocado & egg.",
       nutrition: { calories: 320, fat: "18g", protein: "12g", carbs: "40g" },
@@ -133,7 +177,7 @@ const Home = () => {
     {
       id: 5,
       name: "Grilled Salmon",
-      img: "https://www.allrecipes.com/thmb/CfocX_0yH5_hFxtbFkzoWXrlycs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/ALR-12720-grilled-salmon-i-VAT-4x3-888cac0fb8a34f6fbde7bf836850cd1c.jpg",
+      img: "",
       ingredients: ["salmon", "lemon", "garlic", "butter"],
       description: "Perfectly grilled salmon with a hint of lemon and garlic.",
       nutrition: { calories: 380, fat: "25g", protein: "40g", carbs: "5g" },
@@ -141,7 +185,7 @@ const Home = () => {
     {
       id: 6,
       name: "Classic Cheeseburger",
-      img: "https://tornadoughalli.com/wp-content/uploads/2023/06/THE-BEST-CHEESEBURGER-RECIPE-FINALS-3-1.jpg",
+      img: "",
       ingredients: ["beef patty", "cheese", "lettuce", "tomato", "bun"],
       description: "A juicy grilled cheeseburger with fresh toppings.",
       nutrition: { calories: 650, fat: "35g", protein: "45g", carbs: "50g" },
@@ -149,7 +193,7 @@ const Home = () => {
     {
       id: 7,
       name: "Margarita Pizza",
-      img: "https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_1:1/k%2Farchive%2Fb36036a54e1cf9c084f4b702a63e5a08f1e98983",
+      img: "",
       ingredients: ["pizza dough", "tomato sauce", "mozzarella", "basil"],
       description: "Classic Italian pizza with fresh basil and mozzarella.",
       nutrition: { calories: 600, fat: "22g", protein: "30g", carbs: "70g" },
@@ -157,12 +201,80 @@ const Home = () => {
     {
       id: 8,
       name: "Caesar Salad",
-      img: "https://cdn.loveandlemons.com/wp-content/uploads/2024/12/caesar-salad.jpg",
+      img: "",
       ingredients: ["lettuce", "chicken", "cheese", "croutons", "dressing"],
       description: "A crisp and fresh Caesar salad with grilled chicken.",
       nutrition: { calories: 300, fat: "15g", protein: "25g", carbs: "20g" },
     },
-  ];
+  ]);
+
+  // // Dummy Data (Used when API fails)
+  // const items = [
+  //   {
+  //     id: 1,
+  //     name: "Spaghetti Bolognese",
+  //     img: "https://images.ctfassets.net/uexfe9h31g3m/6QtnhruEFi8qgEyYAICkyS/ab01e9b1da656f35dd1a721c810162a0/Spaghetti_bolognese_4x3_V2_LOW_RES.jpg?w=768&h=512&fm=webp&fit=thumb&q=90",
+  //     ingredients: ["spaghetti", "beef", "tomato", "onion", "garlic"],
+  //     description: "A classic Italian pasta dish with rich meat sauce.",
+  //     nutrition: { calories: 500, fat: "20g", protein: "30g", carbs: "60g" },
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Chicken Curry",
+  //     img: "https://slowcookerfoodie.com/wp-content/uploads/2022/03/Spicy-Chicken-Curry-500x500.jpg",
+  //     ingredients: ["chicken", "onion", "garlic", "curry powder", "rice"],
+  //     description: "A flavorful and aromatic curry with tender chicken.",
+  //     nutrition: { calories: 450, fat: "15g", protein: "35g", carbs: "50g" },
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Vegetable Stir-Fry",
+  //     img: "https://www.mccormick.com/-/media/project/oneweb/mccormick-us/mccormick/recipe-images/stir-fry-vegetables-recipe-800x800.jpg?rev=56e6eec8c7b14887a5c238eb35a20da9&vd=20240606T181334Z&extension=webp&hash=FF02DA13F3817A968D847A8A85B1E48D",
+  //     ingredients: ["bell pepper", "broccoli", "carrot", "soy sauce", "garlic"],
+  //     description: "A quick and healthy vegetable stir-fry with savory sauce.",
+  //     nutrition: { calories: 300, fat: "10g", protein: "8g", carbs: "45g" },
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Avocado Toast",
+  //     img: "https://veganhuggs.com/wp-content/uploads/2023/02/white-bean-avocado-toast.jpg",
+  //     ingredients: ["bread", "avocado", "egg", "cheese"],
+  //     description: "A healthy and delicious toast topped with avocado & egg.",
+  //     nutrition: { calories: 320, fat: "18g", protein: "12g", carbs: "40g" },
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Grilled Salmon",
+  //     img: "https://www.allrecipes.com/thmb/CfocX_0yH5_hFxtbFkzoWXrlycs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/ALR-12720-grilled-salmon-i-VAT-4x3-888cac0fb8a34f6fbde7bf836850cd1c.jpg",
+  //     ingredients: ["salmon", "lemon", "garlic", "butter"],
+  //     description: "Perfectly grilled salmon with a hint of lemon and garlic.",
+  //     nutrition: { calories: 380, fat: "25g", protein: "40g", carbs: "5g" },
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Classic Cheeseburger",
+  //     img: "https://tornadoughalli.com/wp-content/uploads/2023/06/THE-BEST-CHEESEBURGER-RECIPE-FINALS-3-1.jpg",
+  //     ingredients: ["beef patty", "cheese", "lettuce", "tomato", "bun"],
+  //     description: "A juicy grilled cheeseburger with fresh toppings.",
+  //     nutrition: { calories: 650, fat: "35g", protein: "45g", carbs: "50g" },
+  //   },
+  //   {
+  //     id: 7,
+  //     name: "Margarita Pizza",
+  //     img: "https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_1:1/k%2Farchive%2Fb36036a54e1cf9c084f4b702a63e5a08f1e98983",
+  //     ingredients: ["pizza dough", "tomato sauce", "mozzarella", "basil"],
+  //     description: "Classic Italian pizza with fresh basil and mozzarella.",
+  //     nutrition: { calories: 600, fat: "22g", protein: "30g", carbs: "70g" },
+  //   },
+  //   {
+  //     id: 8,
+  //     name: "Caesar Salad",
+  //     img: "https://cdn.loveandlemons.com/wp-content/uploads/2024/12/caesar-salad.jpg",
+  //     ingredients: ["lettuce", "chicken", "cheese", "croutons", "dressing"],
+  //     description: "A crisp and fresh Caesar salad with grilled chicken.",
+  //     nutrition: { calories: 300, fat: "15g", protein: "25g", carbs: "20g" },
+  //   },
+  // ];
 
   const displayedRecipes = error ? items : recipes;
 
