@@ -18,10 +18,10 @@ import {
 import { useState } from "react";
 
 const Profile = () => {
+  const userId = localStorage.getItem("userId") || "Guest"; // Get username from localStorage
   const user = {
     profilePic: "/logo192.png",
     allergies: ["Gluten", "Peanuts", "Dairy"],
-    name: "John Doe",
     item: [
       {
         id: 1,
@@ -96,10 +96,7 @@ const Profile = () => {
           />
           <Box>
             <Text fontSize="2xl" fontWeight="bold" color="gray.700">
-              {user.name}
-            </Text>
-            <Text fontSize="md" color="gray.500">
-              Food Enthusiast & Home Chef
+              {userId}
             </Text>
           </Box>
         </Flex>
@@ -110,11 +107,17 @@ const Profile = () => {
             Allergies
           </Text>
           <Flex gap={2} flexWrap="wrap">
-            {user.allergies.map((allergy, index) => (
-              <Badge key={index} colorScheme="red" fontSize="md" p={2}>
-                {allergy}
-              </Badge>
-            ))}
+            {user.allergies.length > 0 ? (
+              user.allergies.map((allergy, index) => (
+                <Badge key={index} colorScheme="red" fontSize="md" p={2}>
+                  {allergy}
+                </Badge>
+              ))
+            ) : (
+              <Text fontSize="md" color="gray.500">
+                No allergies listed.
+              </Text>
+            )}
           </Flex>
         </Box>
       </Flex>

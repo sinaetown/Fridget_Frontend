@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Image,
@@ -14,6 +14,7 @@ import {
   Input,
   Flex,
 } from "@chakra-ui/react";
+import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
 
 const Home = () => {
   const ingredientsAvailable = [
@@ -73,6 +74,11 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true); // Trigger animation on first render
+  }, []);
 
   const filteredItems = items.filter((item) =>
     item.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -107,52 +113,65 @@ const Home = () => {
         />
       </Flex>
 
-      {/* Recipe Cards */}
+      {/* Recipe Cards with Initial Animation */}
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-        {filteredItems.length > 0 ? (
-          filteredItems.map((item) => {
-            const percentage = calculatePercentage(item.ingredients);
-            return (
-              <Box
-                key={item.id}
-                maxW="300px"
-                h="320px"
-                bg="white"
-                boxShadow="md"
-                borderRadius="lg"
-                p={4}
-                cursor="pointer"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                _hover={{
-                  boxShadow: "xl",
-                  transition: "0.2s",
-                }}
-                onClick={() => handleRecipeClick(item)}
-              >
-                <Image
-                  src={item.img}
-                  alt={item.label}
-                  width="250px"
-                  height="200px"
-                  borderRadius="md"
-                  objectFit="cover"
-                />
-                <Text fontSize="xl" fontWeight="bold" mt={4} textAlign="center">
-                  {item.label}
-                </Text>
-                <Text fontSize="md" color="gray.600">
-                  {percentage}% of ingredients available
-                </Text>
-              </Box>
-            );
-          })
-        ) : (
-          <Text fontSize="xl" textAlign="center" color="gray.600">
-            No matching recipes found.
-          </Text>
-        )}
+        <AnimatePresence>
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item, index) => {
+              const percentage = calculatePercentage(item.ingredients);
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Box
+                    maxW="300px"
+                    h="320px"
+                    bg="white"
+                    boxShadow="md"
+                    borderRadius="lg"
+                    p={4}
+                    cursor="pointer"
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    _hover={{
+                      boxShadow: "xl",
+                      transition: "0.2s",
+                    }}
+                    onClick={() => handleRecipeClick(item)}
+                  >
+                    <Image
+                      src={item.img}
+                      alt={item.label}
+                      width="250px"
+                      height="200px"
+                      borderRadius="md"
+                      objectFit="cover"
+                    />
+                    <Text
+                      fontSize="xl"
+                      fontWeight="bold"
+                      mt={4}
+                      textAlign="center"
+                    >
+                      {item.label}
+                    </Text>
+                    <Text fontSize="md" color="gray.600">
+                      {percentage}% of ingredients available
+                    </Text>
+                  </Box>
+                </motion.div>
+              );
+            })
+          ) : (
+            <Text fontSize="xl" textAlign="center" color="gray.600">
+              No matching recipes found.
+            </Text>
+          )}
+        </AnimatePresence>
       </SimpleGrid>
 
       {/* Recipe Modal */}
