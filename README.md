@@ -1,5 +1,5 @@
 # Fridget 🍏 - AI-Powered Recipe Recommendation Website
- 
+ ### Check the frontend branch to see the frontend implementation!
 ## 📌Project Introduction
 <p> Use OpenAI API to find delicious recipes based on ingredients you already have in your fridge! 🛒✨
 <br>No more wondering what to cook—let AI do the searching for you!</p>
