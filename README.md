@@ -1,5 +1,6 @@
-# 🍏 Fridget  - AI-Powered Recipe Recommendation Website
-**AI 기반 레시피 추천 웹사이트**
+# 🍏 Fridget
+**AI-Powered Recipe Recommendation Website**
+<br>**AI 기반 레시피 추천 웹사이트**
 
 - 🔎 Check the frontend branch to see the frontend implementation!
 - 🔎 프론트엔드 구현은 frontend 브랜치를 확인하세요!
