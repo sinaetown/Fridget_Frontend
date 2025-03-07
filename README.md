@@ -5,19 +5,21 @@
 - 🔎 Check the [backend repository](https://github.com/sinaetown/Fridget_Backend.git) to see the backend codes.
 - 🔎 백엔드 코드는 [이 레포지토리](https://github.com/sinaetown/Fridget_Backend.git)를 참고해주세요.
 
-  
 ## 🎥 Demo Video
 https://youtu.be/FFFVZ70Mt_E
 
+## ✨ Award
+![8CFC0704-76D9-42F0-88CD-0B9FC7854B8A](https://github.com/user-attachments/assets/c4c4763f-c92c-4a20-ac42-ddd5a54639b1)
+
 ## 📌 Project Introduction
-<p> 🛒✨ Use OpenAI API to find delicious recipes based on ingredients you already have in your fridge! 
+<p> Use OpenAI API to find delicious recipes based on ingredients you already have in your fridge! 
 <br>No more wondering what to cook—let AI do the searching for you!</p>
 
 <p> 1️⃣ Smart Recipe Search: The API searches the web for recipes that match your available ingredients.</p>
 <p> 2️⃣ Personalized Recommendations: Using the Nearest Neighbor algorithm, the system analyzes your eating habits and taste preferences.</p>
 <p> 3️⃣ Best Picks for You: The recipes are ranked in descending order based on your preferences, ensuring you get the likable options first!</p>
 
-🛒✨ 냉장고 속 재료만으로도 맛있는 요리를 찾을 수 있다면?
+냉장고 속 재료만으로도 맛있는 요리를 찾을 수 있다면?
 <br> Fridget은 OpenAI API를 활용하여 사용자가 가진 재료를 바탕으로 최적의 레시피를 추천해주는 AI 기반 웹사이트입니다.
 <br>"오늘 뭐 먹지?" 고민하지 말고, AI가 대신 찾아주는 레시피를 활용하세요!
 
