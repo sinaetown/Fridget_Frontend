@@ -2,8 +2,9 @@
 **AI-Powered Recipe Recommendation Website**
 <br>**AI 기반 레시피 추천 웹사이트**
 
-- 🔎 Check the frontend branch to see the frontend implementation!
-- 🔎 프론트엔드 구현은 frontend 브랜치를 확인하세요!
+- 🔎 Check the [backend repository](https://github.com/sinaetown/Fridget_Backend.git) to see the backend codes.
+- 🔎 백엔드 코드는 [이 레포지토리](https://github.com/sinaetown/Fridget_Backend.git)를 참고해주세요.
+
   
 ## 🎥 Demo Video
 https://youtu.be/FFFVZ70Mt_E
