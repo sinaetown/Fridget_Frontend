@@ -29,10 +29,10 @@ https://youtu.be/FFFVZ70Mt_E
 ## 🫡 Members
 |-|Name|Role|
 |--|------|---|
-|💡|Samuel Han|Frontend|
-|💎|Hojun Kwak|Frontend|
-|🕯️|Sinae Hong|Backend|
-|⚡️|Hanseung Choi|AI/ML|
+|💡|Samuel Han 한석현|Frontend|
+|💎|Hojun Kwak 곽호준|Frontend|
+|🕯️|Sinae Hong 홍신애|Backend|
+|⚡️|Hanseung Choi 최한승|AI/ML|
 
 ## 🛠️ Tech Stack
 ### Frontend
