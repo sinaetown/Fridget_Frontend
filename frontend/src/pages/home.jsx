@@ -29,11 +29,7 @@ const Home = () => {
     !localStorage.getItem("homeLoaded")
   );
 
-  // const apiKey = "AIzaSyDsKciyC6XgI1DK9tfpXVrz-MA3obH-Qb4";
-  const apiKey = "AIzaSyBCDfR6zg8yTvPssHCXU_sfU9EvK3ZQmbU";
 
-  // const searchEngineId = "d4ed4b7e4ceb645c9";
-  const searchEngineId = "1100c7fd8d38c42eb";
 
   const [imageUrls, setImageUrls] = useState([]);
 
